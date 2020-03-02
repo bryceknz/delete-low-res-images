@@ -16,7 +16,7 @@ function deleteLowResImages (directory, resolutionLimit) {
 
       if (resolutionInMP <= resolutionLimit) {
         fsp.unlink(file)
-          .then(() => console.log(`File removed: ${file}`))
+          .then(() => console.log(`File removed: ${getFilename(file)}`))
           .catch(err => console.error(`Couldn't delete file: ${err.message}`))
       }
     })
@@ -24,8 +24,15 @@ function deleteLowResImages (directory, resolutionLimit) {
 }
 
 function calculateResolution (file) {
-  const dimensions = sizeOf(file)
-  const resolutionInMP = (dimensions.width / 1000) * (dimensions.height / 1000)
+    const dimensions = sizeOf(file)
+    const resolutionInMP = (dimensions.width / 1000) * (dimensions.height / 1000)
 
-  return resolutionInMP
+    return resolutionInMP
+}
+
+function getFilename (filePath) {
+  const pathSplit = filePath.split('\\')
+  const filename = pathSplit[pathSplit.length - 1]
+  
+  return filename
 }
