@@ -24,10 +24,15 @@ function deleteLowResImages (directory, resolutionLimit) {
 }
 
 function calculateResolution (file) {
+  try {
     const dimensions = sizeOf(file)
     const resolutionInMP = (dimensions.width / 1000) * (dimensions.height / 1000)
 
     return resolutionInMP
+  } catch (err) {
+    console.error(`Couldn't calculate resolution: ${err.message}`)
+    console.error(getFilename(file))
+  }
 }
 
 function getFilename (filePath) {
