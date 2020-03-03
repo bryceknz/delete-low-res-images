@@ -5,6 +5,7 @@ const { promisify } = require('util')
 const recursive = promisify(require('recursive-readdir'))
 const sizeOf = promisify(require('image-size'))
 const { bold, red } = require('colors')
+const fileExtension = require('file-extension')
 
 module.exports = deleteLowResImages
 
@@ -23,21 +24,11 @@ function getListOfFiles (directory, acceptedFiletypes) {
 
   return recursive(directory)
     .then(files =>
-      files.filter(file => {
-        const extension = getExtension(file).toLowerCase()
-        return acceptedFiletypes.includes(extension)
-      }))
+      files.filter(file => acceptedFiletypes.includes(fileExtension(file))))
     .catch(err => {
       console.error(`Couldn't read directory: ${directory}`)
       throw err
     })
-
-  function getExtension (filePath) {
-    const pathSplit = filePath.split('.')
-    const filename = pathSplit[pathSplit.length - 1]
-
-    return filename
-  }
 }
 
 function filterLowResImages (files, resolutionLimit) {
