@@ -8,24 +8,36 @@ const { bold, red } = require('colors')
 
 module.exports = deleteLowResImages
 
-function deleteLowResImages (directory, resolutionLimit) {
+function deleteLowResImages (directory, resolutionLimit, acceptedFiletypes) {
   console.log(bold('📜  Initiating script...\n'))
 
-  return getListOfFiles(directory)
+  return getListOfFiles(directory, acceptedFiletypes)
     .then(files => filterLowResImages(files, resolutionLimit))
     .then(files => deleteFiles(files))
     .catch(() => console.error(red('Something went wrong 😞')))
     .finally(() => console.log(bold(`\n👋  That's all folks!`)))
 }
 
-function getListOfFiles (directory) {
+function getListOfFiles (directory, acceptedFiletypes) {
   console.log(bold('📂  Getting list of files...\n'))
 
   return recursive(directory)
+    .then(files =>
+      files.filter(file => {
+        const extension = getExtension(file).toLowerCase()
+        return acceptedFiletypes.includes(extension)
+      }))
     .catch(err => {
       console.error(`Couldn't read directory: ${directory}`)
       throw err
     })
+
+  function getExtension (filePath) {
+    const pathSplit = filePath.split('.')
+    const filename = pathSplit[pathSplit.length - 1]
+
+    return filename
+  }
 }
 
 function filterLowResImages (files, resolutionLimit) {
